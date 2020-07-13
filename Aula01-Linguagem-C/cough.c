@@ -2,14 +2,11 @@
 
 #include <cs50.h>
 #include <stdio.h>
-
-
-void cough(int n) { // Coloque a primeira sentença da função para indicar sua
+// Coloque a primeira sentença da função para indicar sua
 // presença ao interpretador
-  for(int i = 0; i < n; i++) {
-  printf("Coff\n");
-}
-}
+
+void cough(int n);
+
 int main(void)
 
 {
@@ -18,3 +15,8 @@ int main(void)
 
 
 // Definição do loop for
+void cough(int n) {
+  for(int i = 0; i < n; i++) {
+  printf("Coff\n");
+}
+}

@@ -21,20 +21,20 @@ void hash(int n) {
       hashtag(i);
       printf("  ");
       hashtag(i);
-      space(n-i);
       printf("\n");
     }
 }
 
 void space(int x) {
-  int d;
-  for(d = 1; d <= x; d++) {
+  int a;
+  for(a = 1; a <= x; a++) {
     printf(" ");
   }
 }
 void hashtag(int h) {
-  int a;
-  for(a = 1; a <= h; a++) {
+  int b;
+  for(b = 1; b <= h; b++) {
     printf("#");
-  }
+
+}
 }

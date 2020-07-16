@@ -3,6 +3,7 @@
 
 char alphabet[104];
 string encrypt(string plain, char ciphertext[]);
+bool key_validation(string key);
 void alphabet_maker(string key);
 int len(string a);
 int main(int argc, string argv[])
@@ -13,17 +14,22 @@ int main(int argc, string argv[])
     }
     else {
         string k = argv[1];
-        string p = get_string("plaintext: ");
-        alphabet_maker(k);
-        char cipher[len(p)];
-        encrypt(p, cipher);
-        printf("ciphertext: ");
-        int l = len(p);
-        for (int i = 0; i < l; i++) {
-            printf("%c", cipher[i]);
+        if (key_validation(k)) {
+            string p = get_string("plaintext: ");
+            alphabet_maker(k);
+            char cipher[len(p)];
+            encrypt(p, cipher);
+            printf("ciphertext: ");
+            int l = len(p);
+            for (int i = 0; i < l; i++) {
+                printf("%c", cipher[i]);
         }
-        printf("\n");
-        return 0;
+            printf("\n");
+            return 0;
+        }
+        else {
+            return 1;
+        }
     }
 }
 int len(string a) {
@@ -58,4 +64,26 @@ string encrypt(string plain, char ciphertext[]) {
             ciphertext[i] = plain[i];
         }}
         return ciphertext;
+}
+bool key_validation(string key) {
+    bool valid = true;
+    char keys[26];
+    for (int i = 0; i < 26; i++) {
+        int ascii = key[i];
+        for (int j = 0; j < i; j++) {
+            if (keys[j] == key[i]) {
+                return false;
+                break;
+            }
+        }
+        if (key[i-1] == key[i] || ascii < 65 || ascii > 122) {
+            valid = false;
+            break;
+        }
+        else if (ascii >= 97) {
+            key[i] = (char) ascii - 32;
+        }
+        keys[i] = key[i];
+    }
+    return valid;
 }

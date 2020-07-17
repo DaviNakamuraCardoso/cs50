@@ -22,3 +22,28 @@
 - Operadores matemáticos: **+, -, *, /, ^ e %**
 - Definindo funções
 - Imprecisões
+
+## Semana 2: Debugging e Arrays
+
+- Bugs de sintaxe, runtime e semântica
+- Debugging com GNU Debugger (GDB)
+- Memória e RAM
+- Conceito de *array*
+- Definindo uma *array* em C
+- Iteração com o loop *for*
+- *Arrays* numéricas e de *strings*
+- Introdução à criptografia
+- Argumentos *int argc* e *string argv*
+
+## Semana 3: Algoritmos
+
+- Tempo de execução com *Big O: O(n&sup2;), O(n log n), O(n), O(log n), O(1)*
+- Tempo de execução com *Big &Omega;: &Omega;(n&sup2;), &Omega;(n log n), &Omega;(n), &Omega;(n log n), &Omega;(1)*
+- Busca linear (*Linear search*)
+- Busca binária (*Binary search*)
+- Bubble sort e suas propriedades *(&Omega;(n), O(n&sup2;))*
+- Selection sort e suas propriedades *(&Theta;(n&sup2;))*
+- Recursão 
+- Insertion sort e suas características *(&Theta;(n&sup2;))*
+- Merge sort e suas características *(&Theta;(n log n))*
+- Definição de estruturas

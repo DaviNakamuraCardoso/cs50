@@ -94,6 +94,7 @@ int main(int argc, string argv[])
     lock_pairs();
     print_winner();
     return 0;
+    // Why?
 }
 
 // Update ranks given a new vote
@@ -175,7 +176,7 @@ void lock_pairs(void)
         {
             if (locked[j][pairs[i].winner] && !locked[j][pairs[i].loser])
             {
-                if (locked[pairs[i].loser][j] && locked[pairs[]])
+                if (locked[pairs[i].loser][j])
                 {
                     statement = false;
                 }
@@ -207,6 +208,6 @@ void print_winner(void)
             winner = candidates[i];
         }
     }
-    printf("%s", winner);
+    printf("%s\n", winner);
     return;
 }

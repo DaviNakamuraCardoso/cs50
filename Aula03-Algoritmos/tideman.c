@@ -172,15 +172,53 @@ void lock_pairs(void)
     for (int i = 0; i < pair_count; i++)
     {
         bool statement = true;
+        bool cicl = false;
+        /*int up;
+        int down;*/
         for (int j = 0; j < pair_count; j++)
         {
-            if (locked[j][pairs[i].winner] && !locked[j][pairs[i].loser])
+            for (int d = 1; d < pair_count; d++)
+            {
+                if (locked[pairs[i-d].winner][pairs[i].winner])
+                {
+                    for (int e = 0; e < pair_count; e++)
+                    {
+                        if (locked[pairs[i-e].winner][pairs[i-d].winner] && locked[pairs[i].loser][pairs[i-e].winner])
+                        {
+                            cicl = true;
+                        }
+                        else if (locked[pairs[i].loser][pairs[i-d].winner])
+                        {
+                            cicl = true;
+                        }
+                    }
+                }
+            }
+            if (locked[j][pairs[i].winner] && !locked[j][pairs[i].loser] && cicl)
             {
                 if (locked[pairs[i].loser][j])
                 {
                     statement = false;
                 }
             }
+
+            /*if (locked[j][pairs[i].winner])
+            {
+                up = j;
+            }
+            else if (locked[pairs[i].loser][j])
+            {
+                down = j;
+            }
+            else if (!locked[j][pairs[i].loser])
+            {
+                statement = true;
+            }
+        }
+        if (!(statement && locked[up][pairs[i].winner] && locked[pairs[i].loser][down]))
+        {
+            locked[pairs[i].winner][pairs[i].loser] = true;
+        }*/
         }
         if (statement)
         {

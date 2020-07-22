@@ -201,24 +201,6 @@ void lock_pairs(void)
                     statement = false;
                 }
             }
-
-            /*if (locked[j][pairs[i].winner])
-            {
-                up = j;
-            }
-            else if (locked[pairs[i].loser][j])
-            {
-                down = j;
-            }
-            else if (!locked[j][pairs[i].loser])
-            {
-                statement = true;
-            }
-        }
-        if (!(statement && locked[up][pairs[i].winner] && locked[pairs[i].loser][down]))
-        {
-            locked[pairs[i].winner][pairs[i].loser] = true;
-        }*/
         }
         if (statement)
         {

@@ -9,21 +9,26 @@ typedef struct node
 node;
 
 void printnode(node *start);
+int searchnode(node *nod, char val);
+void destroy(node *list);
 
 int main(void)
 {
     // Setting the node
+    node *list = NULL;
     node *n = malloc(sizeof(node));
-    node *list_start = n;
+    n->name = 'A';
+    n->next = NULL;
+    list = n;
     // Declaring the first element
-    for (int i = 0; i < 26; i++)
+    for (int i = 1; i < 26; i++)
     {
         node *tmp = n;
         n = malloc(sizeof(node));
         n->name = (char) i+65;
         tmp->next = n;
     }
-    printnode(list_start);
+    printnode(list);
 
     for (int j = 0; j < 26; j++)
     {
@@ -32,15 +37,56 @@ int main(void)
         n->name = (char) 97+j;
         tmpr->next = n;
     }
-    printnode(list_start);
-
+    printnode(list);
+    if (searchnode(list, 'd') == 1)
+    {
+        printf("Found!\n");
+    }
+    destroy(list);
+    if (list == NULL)
+    {
+        printf("Mission complete!\n");
+    }
 }
+
+
 void printnode(node *start)
 {
     node *temp = start;
-    for (node *d = start->next; temp->next != NULL; d = d->next)
+    for (node *d = start; temp->next != NULL; d = d->next)
     {
         printf("%c\n", d->name);
         temp = d;
+    }
+}
+
+int searchnode(node *nod, char val)
+{
+    node *tmp = nod;
+    for (node *n = nod; tmp->next != NULL; n = n->next)
+    {
+        tmp = n;
+        if (n->name == val)
+        {
+            return 1;
+            break;
+        }
+        else
+        {
+            continue;
+        }
+    }
+    return 0;
+}
+void destroy(node *list)
+{
+    if (list->next == NULL)
+    {
+        return;
+    }
+    else
+    {
+        destroy(list->next);
+        free(list);
     }
 }

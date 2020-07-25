@@ -47,3 +47,17 @@
 - Insertion sort e suas características *(&Theta;(n&sup2;))*
 - Merge sort e suas características *(&Theta;(n log n))*
 - Definição de estruturas
+
+## Semana 4: Memória 
+
+- Hexadecimais 
+
+- Pointeiros (*pointers*)
+- Alocação de memória dinâmica (*dynamic memory allocation*)
+- Usando as funções *malloc* e *realloc*
+- Copiando e invertendo valores de strings
+- *Heaps* e *stacks*
+- Obtenção de input com *scanf*
+- Funções *fopen*, *fread*, *fwrite*, *fgetc* e *fputc*
+- Manipulação de imagens 
+- Recuperação de arquivos

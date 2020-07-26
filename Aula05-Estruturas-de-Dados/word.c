@@ -13,8 +13,8 @@ _try;
 int len(char* s);
 
 // Lower
-
-// Insertion 
+char* lower(char* str);
+// Insertion
 void insertion(_try *ptr, char* key);
 
 // Searching
@@ -23,7 +23,7 @@ bool search(_try *ptr, char* key);
 int main(void)
 {
     _try *pointer = malloc(sizeof(_try));
-    insertion(pointer, "edavi");
+    insertion(pointer, "eDavi");
     insertion(pointer, "caue");
     if (search(pointer, "edavi"))
     {
@@ -36,6 +36,17 @@ int main(void)
     else
     {
         printf("YUUUUUUP!\n");
+    }
+    char* c = "DAVI";
+    char* e = lower(c);
+    printf("%s\n%s\n", c, e);
+    if (search(pointer, "eDavi"))
+    {
+        printf("Yes!\n");
+    }
+    else
+    {
+        printf("No!\n");
     }
 }
 int len(char* s)
@@ -50,6 +61,7 @@ int len(char* s)
 void insertion(_try *ptr, char* key)
 {
     _try *tmp = ptr;
+    key = lower(key);
     for (int i = 0; i < len(key); i++)
     {
         int a = key[i]-97;
@@ -66,20 +78,10 @@ void insertion(_try *ptr, char* key)
     }
     tmp->exist = true;
 }
-/*void lower(char* s)
-{
-    int l = len(s);
-    for (int i = 0; i < l; i++)
-    {
-        int a = (int) s[i];
-        if (a < 92)
-        {
-            s[i] += 32;
-        }
-    }
-}*/
+
 bool search(_try *ptr, char* key)
 {
+    key = lower(key);
     int l = len(key);
     _try *tmp = ptr;
     for (int i = 0; i < l; i++)
@@ -95,4 +97,19 @@ bool search(_try *ptr, char* key)
         }
     }
     return tmp->exist;
+}
+char* lower(char* str)
+{
+    char* r = malloc(len(str)+1);
+    for (int i = 0; str[i] != 0; i++)
+    {
+        r[i] = str[i];
+        int a = (int) str[i];
+        if (a < 97)
+        {
+            r[i] = (char) a + 32;
+        }
+    }
+    return r;
+    free(r);
 }

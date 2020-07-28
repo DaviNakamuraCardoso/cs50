@@ -7,7 +7,7 @@
 
 #include "dictionary.h"
 
-// Undefine any definitions
+// Undefine any definitions.
 #undef calculate
 #undef getrusage
 

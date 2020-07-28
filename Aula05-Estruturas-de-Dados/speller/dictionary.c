@@ -15,9 +15,10 @@ typedef struct node
 node;
 
 // Number of buckets in hash table
-const unsigned int N = 1000;
+const unsigned int N = 10000;
 void destroy(node *n);
-
+char* lower(char* str);
+int len(const char* s);
 // Hash table
 node *table[N];
 // Returns true if word is in dictionary else false
@@ -25,11 +26,12 @@ bool check(const char *word)
 {
     int h = hash(word);
     node *tmp = malloc(sizeof(node));
-    for (tmp = table[h]; tmp->next != NULL; tmp = tmp->next)
+    bool status = false;
+    for (tmp = table[h]; tmp != NULL; tmp = tmp->next)
     {
-        if ((strcasecmp(word, tmp->word)) == 0)
+        if (strcasecmp(word, tmp->word) == 0)
         {
-            return true;
+            status = true;
             break;
         }
         else
@@ -37,7 +39,8 @@ bool check(const char *word)
             continue;
         }
     }
-    return false;
+
+    return status;
 }
 
 // Hashes word to a number
@@ -137,4 +140,28 @@ void destroy(node *n)
         destroy(n->next);
     }
     free(n);
+}
+int len(const char* s)
+{
+    int l = 0;
+    for (int i = 0; s[i] != '\0'; i++)
+    {
+        l++;
+    }
+    return l;
+}
+char* lower(char* str)
+{
+    char* r = malloc(len(str)+1);
+    for (int i = 0; str[i] != 0; i++)
+    {
+        r[i] = str[i];
+        int a = (int) str[i];
+        if (a < 97)
+        {
+            r[i] = (char) a + 32;
+        }
+    }
+    return r;
+    free(r);
 }

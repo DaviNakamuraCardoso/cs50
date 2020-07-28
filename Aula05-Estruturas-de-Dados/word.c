@@ -35,7 +35,7 @@ int main(void)
     }
     else
     {
-        printf("YUUUUUUP!\n");
+        printf("YUUUUUP!\n");
     }
     char* c = "DAVI";
     char* e = lower(c);

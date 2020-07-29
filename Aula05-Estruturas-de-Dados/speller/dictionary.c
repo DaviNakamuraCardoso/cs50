@@ -15,18 +15,20 @@ typedef struct node
 node;
 
 // Number of buckets in hash table
-const unsigned int N = 10000;
+const unsigned int N = 262626;
 void destroy(node *n);
-char* lower(char* str);
-int len(const char* s);
+int clen(const char* s);
+int ascii(const char c);
 // Hash table
 node *table[N];
 // Returns true if word is in dictionary else false
 bool check(const char *word)
 {
     int h = hash(word);
-    node *tmp = malloc(sizeof(node));
     bool status = false;
+    node *tmp;
+    tmp = malloc(sizeof(node));
+    node *f = tmp;
     for (tmp = table[h]; tmp != NULL; tmp = tmp->next)
     {
         if (strcasecmp(word, tmp->word) == 0)
@@ -39,7 +41,7 @@ bool check(const char *word)
             continue;
         }
     }
-
+    free(f);
     return status;
 }
 
@@ -47,12 +49,33 @@ bool check(const char *word)
 unsigned int hash(const char *word)
 {
     unsigned int h;
+    int c = 10000;
     int num = 0;
-    for (int i = 0; word[i] != '\0'; i++)
+    for (int i = 0; i < 3; i++)
     {
-        num += word[i];
+        if (clen(word) == 1)
+        {
+            num += ascii(word[0]) * c;
+        }
+        else if (clen(word) == 2)
+        {
+            if (i < 2)
+            {
+                num += ascii(word[i]) * c;
+            }
+            else
+            {
+                num += 97;
+            }
+        }
+        else
+        {
+            num += ascii(word[i]) * c;
+        }
+        c = c / 100;
+
     }
-    h = N % num;
+    h = num - 979797;
     return h;
 }
 
@@ -62,7 +85,7 @@ bool load(const char *dictionary)
     FILE *d = fopen(dictionary, "r");
     bool statement = false;
     int c;
-    char *w = malloc((LENGTH+1)*sizeof(char));
+    char *w = malloc((46)*sizeof(char));
     int counter = 0;
     int i = 0;
     while ((c = fgetc(d)) != EOF)
@@ -74,28 +97,30 @@ bool load(const char *dictionary)
         }
         else
         {
+            w[i] = '\0';
             int h = hash(w);
             if (table[h] == NULL)
             {
-                for (int j = 0; j < i; j++)
+                table[h] = malloc(sizeof(node));
+                for (int j = 0; w[j] != '\0'; j++)
                 {
-                    table[h] = malloc(sizeof(node));
                     table[h]->word[j] = w[j];
-                    printf("%c", w[j]);
                 }
             }
             else
             {
                 node* tmp = malloc(sizeof(node));
                 tmp->next = table[h]->next;
-                for (int j = 0; j < i; j++)
+                for (int j = 0; w[j] != '\0'; j++)
                 {
                     tmp->word[j] = w[j];
-                    printf("%c", w[j]);
                 }
                 table[h]->next = tmp;
             }
-            printf("\n");
+            for (int e = 0; e < 46; e++)
+            {
+                w[e] = '\0';
+            }
             i = 0;
         }
         counter++;
@@ -104,6 +129,7 @@ bool load(const char *dictionary)
     {
         statement = true;
     }
+    free(w);
     return statement;
 }
 
@@ -111,23 +137,28 @@ bool load(const char *dictionary)
 unsigned int size(void)
 {
     int siz = 0;
-    for (int i = 0; i < N; i++)
+    int n = (int) N;
+    node *tmp = malloc(sizeof(node));
+    node *f = tmp;
+    for (int i = 0; i < n; i++)
     {
-        for (node *tmp = table[i]; tmp->next != NULL; tmp = tmp->next)
+        for (tmp = table[i]; tmp != NULL; tmp = tmp->next)
         {
             siz++;
         }
     }
+    free(f);
     return siz;
 }
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
 {
-    for (int i = 0; i < N; i++)
+    int n = (int) N;
+    for (int i = 0; i < n; i++)
     {
         destroy(table[i]);
     }
-    return false;
+    return true;
 }
 void destroy(node *n)
 {
@@ -141,7 +172,17 @@ void destroy(node *n)
     }
     free(n);
 }
-int len(const char* s)
+
+int ascii(const char c)
+{
+    int a = (int) c;
+    if (a < 97)
+    {
+        a += 32;
+    }
+    return a;
+}
+int clen(const char* s)
 {
     int l = 0;
     for (int i = 0; s[i] != '\0'; i++)
@@ -149,19 +190,4 @@ int len(const char* s)
         l++;
     }
     return l;
-}
-char* lower(char* str)
-{
-    char* r = malloc(len(str)+1);
-    for (int i = 0; str[i] != 0; i++)
-    {
-        r[i] = str[i];
-        int a = (int) str[i];
-        if (a < 97)
-        {
-            r[i] = (char) a + 32;
-        }
-    }
-    return r;
-    free(r);
 }

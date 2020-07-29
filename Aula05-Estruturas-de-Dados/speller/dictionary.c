@@ -13,10 +13,11 @@ typedef struct node
     struct node *next;
 }
 node;
+int D = 0;
 
 // Number of buckets in hash table
-const unsigned int N = 262626;
-void destroy(node *n);
+const unsigned int N = 272727;
+void destroy(node* n);
 int clen(const char* s);
 int ascii(const char c);
 // Hash table
@@ -26,19 +27,24 @@ bool check(const char *word)
 {
     int h = hash(word);
     bool status = false;
-    node *tmp;
-    tmp = malloc(sizeof(node));
+    node *tmp = (node*)malloc(sizeof(node));
     node *f = tmp;
-    for (tmp = table[h]; tmp != NULL; tmp = tmp->next)
+    if (table[h] != NULL)
     {
-        if (strcasecmp(word, tmp->word) == 0)
+        for (tmp = table[h]; tmp != NULL; tmp = tmp->next)
         {
-            status = true;
-            break;
-        }
-        else
-        {
-            continue;
+           if (tmp != NULL)
+            {
+                if (strcasecmp(word, tmp->word) == 0)
+                {
+                    status = true;
+                    break;
+                }
+                else
+                {
+                    continue;
+                }
+           }
         }
     }
     free(f);
@@ -122,6 +128,7 @@ bool load(const char *dictionary)
                 w[e] = '\0';
             }
             i = 0;
+            D++;
         }
         counter++;
     }
@@ -129,6 +136,7 @@ bool load(const char *dictionary)
     {
         statement = true;
     }
+    fclose(d);
     free(w);
     return statement;
 }
@@ -136,19 +144,7 @@ bool load(const char *dictionary)
 // Returns number of words in dictionary if loaded else 0 if not yet loaded
 unsigned int size(void)
 {
-    int siz = 0;
-    int n = (int) N;
-    node *tmp = malloc(sizeof(node));
-    node *f = tmp;
-    for (int i = 0; i < n; i++)
-    {
-        for (tmp = table[i]; tmp != NULL; tmp = tmp->next)
-        {
-            siz++;
-        }
-    }
-    free(f);
-    return siz;
+    return D;
 }
 // Unloads dictionary from memory, returning true if successful else false
 bool unload(void)
@@ -160,7 +156,7 @@ bool unload(void)
     }
     return true;
 }
-void destroy(node *n)
+void destroy(node* n)
 {
     if (n == NULL)
     {

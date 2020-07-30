@@ -16,7 +16,7 @@ node;
 int D = 0;
 
 // Number of buckets in hash table
-const unsigned int N = 272727;
+const unsigned int N = 262627;
 void destroy(node* n);
 int clen(const char* s);
 int ascii(const char c);

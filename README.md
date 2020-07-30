@@ -61,3 +61,36 @@
 - Funções *fopen*, *fread*, *fwrite*, *fgetc* e *fputc*
 - Manipulação de imagens 
 - Recuperação de arquivos
+
+## Semana 5: Estruturas de Dados
+
+- Redefinindo tamanho de *arrays* com *realloc*
+
+- Definição, propriedades e construção das seguintes estruturas de dados:
+
+  - *Linked Lists*
+
+  - *Tree*s
+
+  - *Hash tables* (e *hash functions*)
+
+  - *Tries*
+
+- Definição e características das seguintes estrururas abstratas de dados:
+
+  - *Queues*
+  - *Stacks*
+  - Dicionários
+
+## Semana 6: Python 
+
+- Conceitos básicos: função *print*, declaração *if*, loops *while* e *for*
+- Tipos de dados: *strings*, booleanos, inteiros, *floats* e *Nonetype*
+- Estruturas de dados: *list*, *set*, *dictionary*, *range* e *tuple*
+- Definindo funções
+- Obtenção de input com a função *input()*
+- Lendo argumentos da linha de comando com *sys.argv*
+- Métodos *upper*, *lower* e*append*
+- Funções *len* e *sort*
+- Expressões Regulares
+- Implementação de Inteligência Artificial para reconhecimento facial e reconhecimento de voz a partir de bibliotecas de código aberto

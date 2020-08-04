@@ -5,9 +5,10 @@ import subprocess
 def main():
     count = 0
     for folder, subfolder, filename in os.walk('/home'):
-        if 'messages.json' in filename:
-            subprocess.Popen(os.path.join(folder, filename[0]))
-            break
+        for file in filename:
+            if file.endswith('.jpg'):
+                subprocess.Popen(['see', os.path.join(folder, file)])
+             
 
     print(count)
     return

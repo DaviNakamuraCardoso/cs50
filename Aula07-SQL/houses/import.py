@@ -31,7 +31,7 @@ db.execute(f"INSERT INTO students (first, middle, last, birth, house) VALUES ({n
         for row in reader:
             names = row['name'].split()
             if len(names) == 2:
-                middle = "NULL"
+                middle = None
                 last = names[1]
             else:
                 middle = names[1]

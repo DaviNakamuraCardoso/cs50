@@ -20,5 +20,19 @@ def search(house):
     """
 
     :param house: String with house
-    :return:
+    :return: Array with the characters
     """
+    db = cs50.SQL("sqlite:///students.db")
+    array = db.execute('SELECT * FROM students WHERE house = ? ORDER BY last', house)
+    for row in array:
+        if row['middle'] != None:
+            name = row['first'] + ' ' + row['middle'] + ' ' + row['last']
+        else:
+            name = row['first'] + ' ' + row['last']
+        birth = row['birth']
+        print(f"{name}, born {birth}")
+
+
+if __name__ == '__main__':
+    main()
+

@@ -94,3 +94,49 @@
 - Funções *len* e *sort*
 - Expressões Regulares
 - Implementação de Inteligência Artificial para reconhecimento facial e reconhecimento de voz a partir de bibliotecas de código aberto
+
+## Semana 7: SQL
+
+- Problemas de uma base de dados em CSV
+- Manipulação de uma Base de Dados com **SQLite3**
+- Criando *tables*
+- Importando dados para uma base de dados com Python
+- Comandos SELECT, UPDATE, DELETE
+- Comandos WHERE, ORDER BY e LIMIT
+- Selecionando dados de múltiplas *tables* com JOIN
+
+## Semana 8: Informação
+
+- Revisão dos conceitos aprendidos
+- Ética na programação:
+  - Senhas
+  - Cookies
+  - Uso impróprio de fotos e vídeos
+- Apresentação dos projetos (*Choose your track*):
+  - Games (com Lua)
+  - Mobile
+    - Android (com Java)
+    - iOS (com Swift)
+  - Web (com HTML, CSS e Python)
+- **Projeto Escolhido**: Games
+
+## Projeto Final 1: Pong
+
+### Aula Inicial
+
+- Introdução à linguagem Lua
+- Instalação de packages para trabalhar com Lua
+- Instalação da *framework* LÖVE
+- Instalação de packages para trabalhar com LÖVE
+
+### Pong 0
+
+- O loop dos jogos (*input->update->render*)
+- Primeiro programa escrito em Lua
+- Métodos *love.load*, *love.draw* e *love.graphics.print*
+
+### Pong 1
+
+- Uso da biblioteca *push*, instalada diretamente do GitHub
+- Funções *setDefaultFilter()*, *keypressed()* e *quit()*
+- Implementando um tamanho virtual de tela

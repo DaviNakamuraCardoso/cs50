@@ -140,3 +140,13 @@
 - Uso da biblioteca *push*, instalada diretamente do GitHub
 - Funções *setDefaultFilter()*, *keypressed()* e *quit()*
 - Implementando um tamanho virtual de tela
+
+### Pong 2
+
+- Importando fontes com as funções *love.graphics.newFont* e *love.graphics.setFont*
+- Desenhando os retângulos de jogadores com *love.graphics.rectangle*
+- Desenhando a bola
+
+### Pong 3
+
+- 

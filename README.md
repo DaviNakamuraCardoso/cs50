@@ -137,7 +137,7 @@
 
 ### Pong 1
 
-- Uso da biblioteca *push*, instalada diretamente do GitHub
+- Uso da biblioteca [push](https://github.com/Ulydev/push), de [Ulydev](https://github.com/Ulydev)
 - Funções *setDefaultFilter()*, *keypressed()* e *quit()*
 - Implementando um tamanho virtual de tela
 
@@ -149,4 +149,60 @@
 
 ### Pong 3
 
-- 
+- Implementação do movimento dos *paddles* 
+- Uso da função *keyboard.isDown* para verificar o estado das teclas
+- Atualizando a posição dos *paddles* com base no *dt (delta time)* desde a última atualização 
+
+### Pong 4
+
+- Limitando o movimento dos *paddles* às extremidades da tela
+- Implementando o movimento da bola
+- Resetando a posição e velocidade toda vez que a tecla ENTER é pressionada
+
+### Pong 5
+
+- Refatorando o código a partir do uso de classes
+- Implementação da biblioteca [class.lua](https://github.com/tenry92/class.lua), de [tenry92](https://github.com/tenry92) 
+- Criando a Superclasse (ou classe base) *Block*, com os atributos: *x position, y position, width* e *height*, e o método *render*
+- Criando as duas subclasses de *Block*: *Paddle* e *Ball*
+
+### Pong 6
+
+- Exibindo o FPS do jogo na tela com a função implementada do LÖVE *getFPS*
+- Mudando o título do jogo para Pong
+
+### Pong 7
+
+- Adicionando um mecanismo de reflexão (*bounce*) da bola ao tocar a parte superior ou inferior
+- Adicionando reflexão da bola ao tocar um dos *paddles*
+- Implementando a volta da bola ao centro sempre que toca um dos lados da tela
+
+### Pong 8
+
+- Exibição e atualização dos pontos dos jogadores
+- Adição do game_state *serve*, em que o jogador, após marcar um ponto, deve lançar novamente a bola
+
+### Pong 9
+
+- Alterando a velocidade da bola ao ser resetada para que ela se direcione sempre ao lado do último jogador a marcar pontos
+- Mudança na mensagem exibida a cada estado do jogo (start, serve, play)
+
+### Pong 10
+
+- Checando a quantidade de pontos
+- Definindo um número máximo de pontos
+- Exibindo o vencedor
+
+### Pong 11
+
+- Adicionando efeitos sonoros ao bater nas bordas, nos *paddles* e aol resetar
+- Implementação da funcionalidade Pause, para pausar o jogo
+
+### Pong 12
+
+- Permitindo a redifinição do tamanho da tela
+
+
+
+
+

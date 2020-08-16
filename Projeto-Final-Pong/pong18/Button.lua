@@ -6,9 +6,11 @@ Button = Class(Block)
 
 
 --=========================== Button init ====================================--
-function Button:construct(x, y, width, height)
+function Button:construct(x, y, width, height, value)
 --//______________________________ Attributes ______________________________\\--
     Button.super.construct(self, x, y, width, height)
+    self.value = value
+    self.text = text
     self.xcorner = 4
     self.ycorner = 4
     self.font_size = self.width * self.height / 230
@@ -40,23 +42,44 @@ function Button:draw(text)
     message:show(text)
 end
 --============================================================================--
-
---=============================== Setting game variables =====================--
-
---============================================================================--
-
+function Button:mouse_in_bounds(x, y)
+    x = x * VIRTUAL_WIDTH / love.graphics.getWidth()
+    y = y * VIRTUAL_HEIGHT / love.graphics.getHeight()
+    if x > self.x and x < self.x + self.width and y > self.y and y < self.y + self.height then
+        return true
+    else
+        return false
+    end
+end
 --=========================== Button hover ===================================--
 function Button:hover()
-    mouse_x = love.mouse.getX() * VIRTUAL_WIDTH / love.graphics.getWidth()
-    mouse_y = love.mouse.getY() * VIRTUAL_HEIGHT / love.graphics.getHeight()
-    if mouse_x >= self.x and mouse_x <= (self.x + self.width) and mouse_y >= self.y and mouse_y <= (self.y + self.height) then
-        if love.mouse.isDown(1) then
-            return true 
+    x, y = love.mouse.getPosition()
+    local left_click = love.mouse.isDown(1)
+    if self:mouse_in_bounds(x, y) then
+        if left_click then
+            return true
         else
             self.color = self.hover_color
         end
     else
         self.color = self.no_hover_color
+    end
+end
+
+--============================================================================--
+
+--================================ Game State Update =========================--
+function Button:gameStateUpdate(game)
+    if self:hover() then
+        game.state = self.value
+    end
+end
+--============================================================================--
+
+--========================= Game Mode Udpate ================================--
+function Button:gameModeUpdate(game)
+    if self.hover() then
+        game.mode = self.value
     end
 end
 --============================================================================--

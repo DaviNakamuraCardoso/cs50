@@ -12,7 +12,7 @@ VIRTUAL_HEIGHT = 243
 PADDLE_SPEED = 200
 
 -- Defining the MAX_POINTS
-MAX_POINTS = 2
+MAX_POINTS = 10
 
 -- References
 X_CENTER = VIRTUAL_WIDTH / 2
@@ -33,15 +33,13 @@ socket = require "socket"
 --\\                                                                        //--
 
 --//                            Classes                                     \\--
+require 'Game'
 require 'Block'
 require 'Paddle'
 require 'Ball'
 require 'Message'
 require 'Button'
 require 'Player'
-require 'GameStateButton'
-require 'GameModeButton'
-require 'GameSettingsButton'
 
 --\\                                                                        //--
     --\\________________________________________________________________//--
@@ -51,6 +49,7 @@ require 'GameSettingsButton'
 function love.load()
 
     updates = 0
+    game = Game('menu', 'none', MAX_POINTS)
     -- Starts the random number
     math.randomseed(os.time())
 
@@ -70,26 +69,26 @@ function love.load()
 
 --//___________________________ Buttons ____________________________________\\--
     -- Player vs Player button
-    button_pvp = GameModeButton(X_CENTER - 150, Y_CENTER, 80, 48, 'player_vs_player')
+    button_pvp = Button(X_CENTER - 150, Y_CENTER, 80, 48, 'player_vs_player')
     button_pvp.font_y = 2
     button_pvp.font_size = 12
 
     -- Player vs AI button
-    button_pva = GameModeButton(X_CENTER + 80, Y_CENTER, 80, 48, 'player_vs_ai')
+    button_pva = Button(X_CENTER + 80, Y_CENTER, 80, 48, 'player_vs_ai')
     button_pva.font_y = 2
     button_pva.font_size = 12
 
     -- Play button
-    button_play = GameStateButton(X_CENTER - 50, Y_CENTER, 100, 20, 'mode_menu')
+    button_play = Button(X_CENTER - 50, Y_CENTER, 100, 20, 'mode_menu')
 
     --//______________________ Settings buttons _________________________\\--
-    button_settings = GameStateButton(X_CENTER - 50, Y_CENTER + 30, 100,
+    button_settings = Button(X_CENTER - 50, Y_CENTER + 30, 100,
     20, 'settings')
-    button_max_points = GameSettingsButton(X_CENTER - 50, Y_CENTER + 30, 100, 20, 1)
+
 
     --\\_________________________________________________________________//--
     -- Credit button
-    button_credits = GameStateButton(X_CENTER - 50, Y_CENTER + 60, 100, 20, 'credits')
+    button_credits = Button(X_CENTER - 50, Y_CENTER + 60, 100, 20, 'credits')
 
 --\\________________________________________________________________________//--
     -- Build the left paddle
@@ -100,10 +99,6 @@ function love.load()
 
     -- Build the ball (Ball(x, y, width, height))
     ball = Ball(X_CENTER - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
-
-    -- Keeping track of the game state (start or play)
-    game_state = 'menu'
-    game_mode = 'nogame'
 
     -- Create message objects Message(x, y, font, size, align)
     message_1 = Message(0, 20, 8, pixeled)
@@ -140,27 +135,27 @@ end
 --====== Updates the game based on the delta time (dt) since last update =====--
 function love.update(dt)
 
-    if game_state == 'menu' then
-        button_play:update()
-        button_settings:update()
-        button_credits:update()
-    elseif game_state == 'credits' then
+    if game.state == 'menu' then
+        button_play:gameStateUpdate(game)
+        button_settings:gameStateUpdate(game)
+        button_credits:gameStateUpdate(game)
+    elseif game.state == 'credits' then
         credits_message:float(dt)
-    elseif game_state == 'mode_menu' then
-        button_pva:update()
-        button_pvp:update()
+    elseif game.state == 'mode_menu' then
+        button_pvp:gameModeUpdate(game)
+        button_pva:gameModeUpdate(game)
+        if button_pva:hover() or button_pvp:hover() then
+            game.state = 'start'
+        end
         player_1 = Player("Player 1", -1)
         player_2 = Player("Player 2", 1)
         player_1.adversary = player_2
         player_2.adversary = player_1
-        if game_mode == 'player_vs_ai' then
+        if game.mode == 'player_vs_ai' then
             player_2.name = 'AI'
             player_2.isAi = true
         end
-    elseif game_state == 'settings' then
-        MAX_POINTS = MAX_POINTS + button_max_points:update()
-
-    elseif game_state == 'play' then
+    elseif game.state == 'play' then
     --//___________________ Check if the ball is coliding _________________\\
         if ball:collides(paddle_1) then
             -- Deflect ball to the right
@@ -198,7 +193,7 @@ function love.update(dt)
             updates = 0
             sounds['reset']:play()
         end
-    elseif game_state == 'start' then
+    elseif game.state == 'start' then
         -- Reseting the scores
         -- Serving Player
         serving_player = math.random(2) == 1 and player_1 or player_2
@@ -210,7 +205,7 @@ function love.update(dt)
 
     end
     --\\________________________________________________________________//--
-    if game_state == 'play' or game_state == 'serve' or game_state == 'start' then
+    if game.state == 'play' or game.state == 'serve' or game.state == 'start' then
 
 
         --//______________ Controls the left paddle movement _______________\\--
@@ -232,7 +227,7 @@ function love.update(dt)
         --\\________________________________________________________________//--
 
         --//______________ Controls the right paddle movement ______________\\--
-        if game_mode == 'player_vs_player' then
+        if game.mode == 'player_vs_player' then
             -- Goes up when up arrow pressed
             if love.keyboard.isDown('up') then
                 paddle_2.dy = - PADDLE_SPEED
@@ -249,7 +244,7 @@ function love.update(dt)
 
             paddle_2:update(dt)
         else
-            if updates > 90 and game_state == 'serve' and serving_player.isAi then
+            if updates > 90 and game.state == 'serve' and serving_player.isAi then
                 game_state = 'play'
             else
                 updates = updates + 1
@@ -278,8 +273,7 @@ function love.draw()
     -- Set the screen color
     love.graphics.clear(40 / 255, 45 / 255, 52 / 255, 1)
 
-    if game_state ~= 'menu' and game_state ~= 'mode_menu' and game_state ~= 'credits'
-    and game_state ~= 'settings' then
+    if game.state ~= 'menu' and game.state ~= 'mode_menu' and game.state ~= 'credits' then
 
         -- Draw the left paddle
         paddle_1:render()
@@ -294,37 +288,32 @@ function love.draw()
         score_1:show(player_1.score)
         score_2:show(player_2.score)
 
-    elseif game_state == 'mode_menu' then
+    elseif game.state == 'mode_menu' then
         -- Draw the button
         button_pvp:draw('PLAYER\nvs\nPLAYER')
         button_pva:draw('PLAYER\nvs\nA.I.')
 
-    elseif game_state == 'menu' then
+    elseif game.state == 'menu' then
         -- Draw the three initial buttons
         button_play:draw('PLAY GAME')
         button_settings:draw('SETTINGS')
         button_credits:draw('CREDITS')
-
-    elseif game_state == 'settings' then
-        button_max_points:draw('MAX POINTS: ' .. tostring(MAX_POINTS))
     end
 
     --//__________Changes the message based on the game_state___________\\--
 
     -- If in start state, display Welcome Pong and press enter to play
-    if game_state == 'menu' then
+    if game.state == 'menu' then
         message_1.size = 24
         message_1:show("Pong")
         message_1.size = 8
         message_2:show('by Davi Nakamura')
-    elseif game_state == 'settings' then
-        message_1:show('Settings')
-    elseif game_state == 'start' then
+    elseif game.state == 'start' then
         message_1:show('Hello Pong!')
         message_2:show('Press enter to play!')
 
     -- If in serve state, display the serving_player and "press enter to serve"
-    elseif game_state == 'serve' then
+    elseif game.state == 'serve' then
         message_1:show(serving_player.name .. "'s turn")
         if serving_player.name ~= 'AI' then
             message_2:show('Press Enter to serve')
@@ -333,20 +322,20 @@ function love.draw()
         end
 
     -- If in victory state, display a message with the winner
-    elseif game_state == 'victory' and winner ~= 'none' then
+    elseif game.state == 'victory' and winner ~= 'none' then
         message_1.size = 24
         message_1:show(winner .. ' is the winner')
         message_2:show('Press Enter to play again')
         message_1.size = 8
-    elseif game_state == 'pause' then
+    elseif game.state == 'pause' then
         message_1:show('Game Paused')
         message_2:show('Press Space to resume')
-    elseif game_state == 'play' then
+    elseif game.state == 'play' then
         message_1:show('Press Space to Pause')
-    elseif game_state == 'mode_menu' then
+    elseif game.state == 'mode_menu' then
         message_1:show('Welcome to Pong!')
         message_2:show('Select a Game Mode:')
-    elseif game_state == 'credits' then
+    elseif game.state == 'credits' then
         credits_message:show("A Davi Nakamura Production for\nHarvard CS50x\n\nImported Libraries by\n\nUlydev\ntenry92\n\nSound Effects from\nRFX\n\n")
 
     end
@@ -372,20 +361,20 @@ function love.keypressed(key)
     --//_______ When enter key pressed, start the ball movement ________\\--
     elseif key == 'enter' or key == 'return' then
         -- If the game ball is stoped (start state), changes to serve
-        if game_state == 'start' then
-            game_state = 'serve'
+        if game.state == 'start' then
+            game.state = 'serve'
         -- If in victory state, reset
-        elseif game_state == 'victory' then
-            game_state = 'start'
+        elseif game.state == 'victory' then
+            game.state = 'start'
         -- If the game is in serve state, changes to play
-        elseif game_state == 'serve' and not serving_player.isAi then
-            game_state = 'play'
+        elseif game.state == 'serve' and not serving_player.isAi then
+            game.state = 'play'
         end
     elseif key == 'space' then
-        if game_state == 'play' then
-            game_state = 'pause'
-        elseif game_state == 'pause' then
-            game_state = 'play'
+        if game.state == 'play' then
+            game.state = 'pause'
+        elseif game.state == 'pause' then
+            game.state = 'play'
         end
 
     end

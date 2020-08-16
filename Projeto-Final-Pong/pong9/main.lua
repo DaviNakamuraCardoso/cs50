@@ -135,7 +135,7 @@ function love.update(dt)
     end
     --\\________________________________________________________________//--
 
-    --//______________ Controls the left paddle movement _______________//--
+    --//______________ Controls the left paddle movement _______________\\--
 
     -- Goes up when w key pressed
     if love.keyboard.isDown('w') then
@@ -151,9 +151,9 @@ function love.update(dt)
     end
 
     paddle_1:update(dt)
-    --\\________________________________________________________________\\--
+    --\\________________________________________________________________//--
 
-    --//______________ Controls the right paddle movement ______________//--
+    --//______________ Controls the right paddle movement ______________\\--
 
     -- Goes up when up arrow pressed=
     if love.keyboard.isDown('up') then
@@ -171,7 +171,7 @@ function love.update(dt)
 
     paddle_2:update(dt)
 
-    --\\________________________________________________________________\\--
+    --\\________________________________________________________________//--
 
     --//___ Updating the ball position based on the game_state value ___\\--
 
@@ -203,17 +203,24 @@ function love.draw()
     message_1 = Message(0, 20, 'codie.ttf', 80, 'center')
     message_2 = Message(0, 40, 'codie.ttf', 80, 'center')
 
+    --//__________Changes the message based on the game_state___________\\--
+
+    -- If in start state, display Welcome Pong and press enter to play
     if game_state == 'start' then
         message_1:show('Welcome to pong')
         message_2:show('Press Enter to Play')
 
+    -- If in serve state, display the serving_player and "press enter to serve"
     elseif game_state == 'serve' then
         message_1:show("Player " .. tostring(serving_player) .. "'s turn")
         message_2:show('Press Enter to serve')
+
+    -- If in victory state, display a message with the winner
     elseif game_state == 'victory' then
         message_1.size = 80
 
     end
+    --\\________________________________________________________________//--
 
     -- Show the scores
     love.graphics.setFont(big_font)
@@ -240,19 +247,20 @@ end
 --====================== Starts and exits the game ===========================--
 function love.keypressed(key)
 
-    --//___________ When escape key pressed, quit the game _____________//--
+    --//___________ When escape key pressed, quit the game _____________\\--
     if key == 'escape' then
         love.event.quit()
 
-    --//______ When enter key pressed, start the ball movement _________//--
+    --//______ When enter key pressed, start the ball movement _________\\--
     elseif key == 'enter' or key == 'return' then
-        -- If the game ball is stoped (start state), changes to play
+        -- If the game ball is stoped (start state), changes to serve
         if game_state == 'start' then
             game_state = 'serve'
+        -- If the game is in serve state, changes to play
         elseif game_state == 'serve' then
             game_state = 'play'
         end
     end
-    --\\________________________________________________________________\\--
+    --\\________________________________________________________________//--
 end
 --============================================================================--

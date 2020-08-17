@@ -23,7 +23,7 @@ end
 function Ball:update(dt)
     --//____________ Move the ball when the game is started ____________\\--
 
-    if game_state == 'play' then
+    if game.state == 'play' then
         self.x = self.x + self.dx * dt
         self.y = self.y + self.dy * dt
     end

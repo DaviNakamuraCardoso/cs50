@@ -24,9 +24,9 @@ function Player:reset(ball)
     serving_player = self.adversary
     ball.dx = 100 * self.side
     if self.score >= MAX_POINTS then
-        game_state = 'victory'
+        game.state = 'victory'
         winner = self.name
     else
-        game_state = 'serve'
+        game.state = 'serve'
     end
 end

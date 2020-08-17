@@ -29,7 +29,6 @@ require("class")
 -- Push library from https://github.com/Ulydev/push
 push = require "push"
 
-socket = require "socket"
 --\\                                                                        //--
 
 --//                            Classes                                     \\--
@@ -101,6 +100,7 @@ function love.load()
     ball = Ball(X_CENTER - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
 
     -- Create message objects Message(x, y, font, size, align)
+    title = Message(0, 20, 20, pixeled)
     message_1 = Message(0, 20, 8, pixeled)
     message_2 = Message(0, 50, 8, pixeled)
     score_1 = Message(-50, Y_CENTER, 32, pixelu )
@@ -245,7 +245,7 @@ function love.update(dt)
             paddle_2:update(dt)
         else
             if updates > 90 and game.state == 'serve' and serving_player.isAi then
-                game_state = 'play'
+                game.state = 'play'
             else
                 updates = updates + 1
             end
@@ -304,9 +304,7 @@ function love.draw()
 
     -- If in start state, display Welcome Pong and press enter to play
     if game.state == 'menu' then
-        message_1.size = 24
-        message_1:show("Pong")
-        message_1.size = 8
+        title:show('PONG')
         message_2:show('by Davi Nakamura')
     elseif game.state == 'start' then
         message_1:show('Hello Pong!')

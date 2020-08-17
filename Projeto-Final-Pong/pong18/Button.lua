@@ -60,9 +60,11 @@ function Button:hover()
             return true
         else
             self.color = self.hover_color
+            return false
         end
     else
         self.color = self.no_hover_color
+        return false
     end
 end
 
@@ -78,7 +80,7 @@ end
 
 --========================= Game Mode Udpate ================================--
 function Button:gameModeUpdate(game)
-    if self.hover() then
+    if self:hover() then
         game.mode = self.value
     end
 end

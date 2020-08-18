@@ -59,7 +59,7 @@ function love.load()
     }
 
     -- Create the game object
-    game = Game('menu', 'none', MAX_POINTS)
+    game = Game('menu', 'none', MAX_POINTS, 'MEDIUM')
 
     -- Starts the random number
     math.randomseed(os.time())
@@ -77,7 +77,10 @@ function love.load()
     sounds = {
         ['paddle_hit'] = love.audio.newSource('paddle_hit.wav', 'static'),
         ['wall_hit'] = love.audio.newSource('wall_hit.wav', 'static'),
-        ['reset'] = love.audio.newSource('reset.wav', 'static')
+        ['reset'] = love.audio.newSource('reset.wav', 'static'),
+        ['pause'] = love.audio.newSource('pause.wav', 'static'),
+        ['play'] = love.audio.newSource('play.wav', 'static'),
+        ['button'] = love.audio.newSource('button.wav', 'static')
     }
 
     block_smooth = Block(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT)
@@ -110,9 +113,22 @@ function love.load()
         [2] = 10,
         [3] = 15,
     }
-    buttons_points = RadioButton(Y_CENTER + 20, 20, points, 4, blue)
+
+    -- Chages the max number of points
+    buttons_points = RadioButton(Y_CENTER + 20, 20, points, 4, blue, 'points')
     buttons_points.font_family = bitwonder
     buttons_points:generate()
+
+    -- Changes the AI dificulty
+    dificulty = {
+        [0] = 'EASY',
+        [1] = 'MEDIUM',
+        [2] = 'HARD',
+    }
+    buttons_dificulty = RadioButton(Y_CENTER + 90, 15, dificulty, 3, blue, 'dificulty')
+    buttons_dificulty.font_size = 10
+    buttons_dificulty.font_family = four
+    buttons_dificulty:generate()
 
 
 
@@ -126,6 +142,13 @@ function love.load()
     button_menu.font_family = four
     button_menu.font_size = 10
     button_menu.font_y = 4
+
+    -- Restart button
+    button_restart = Button(X_CENTER - 45, Y_CENTER, 90, 20, 'start')
+    button_restart.no_hover_color = blue
+    button_restart.font_family = four
+    button_restart.font_y = 5.2
+    button_restart.font_size = 10
 --\\________________________________________________________________________//--
     -- Build the left paddle
     paddle_1 = Paddle(5, 20, 5, 20)
@@ -138,14 +161,16 @@ function love.load()
 
     -- Create message objects Message(x, y, font, size, align)
     title = Message(0, 20, 20, bitwonder)
-    message_1 = Message(0, 20, 20, four)
+    subtitle = Message(0, 20, 20, four)
+    message_1 = Message(0, 20, 15, four)
     message_2 = Message(0, 50, 8, pixeled)
-    score_1 = Message(-50, Y_CENTER, 32, pixelu )
-    score_2 = Message(50, Y_CENTER, 32, pixelu )
+    score_1 = Message(-50, Y_CENTER, 32, pixelu)
+    score_2 = Message(50, Y_CENTER, 32, pixelu)
     fps = Message(30, 20, 18, pixelu)
     fps.align = 'left'
-    credits_message = Message(0, VIRTUAL_HEIGHT, 10, pixeled)
+    credits_message = Message(0, VIRTUAL_HEIGHT, 8, pixeled)
     max_points_message = Message(0, Y_CENTER - 10, 10, four)
+    dificulty_message = Message(0, Y_CENTER + 60, 10, four)
 
     -- Setup the window size and properties
     -- Window title
@@ -158,7 +183,7 @@ function love.load()
     WINDOW_HEIGHT,                      -- The real height
     {
         fullscreen = false,             -- Not fullscreen
-        resizable = true,              -- Not resizable
+        resizable = true,              -- Resizable
         vsync = true
     })
 end
@@ -184,6 +209,7 @@ function love.update(dt)
         credits_message:float(dt)
     elseif game.state == 'settings' then
         buttons_points:updateAll(game)
+        buttons_dificulty:updateAll(game)
     elseif game.state == 'mode_menu' then
         button_pvp:gameModeUpdate(game)
         button_pva:gameModeUpdate(game)
@@ -195,9 +221,11 @@ function love.update(dt)
         player_1.adversary = player_2
         player_2.adversary = player_1
         if game.mode == 'player_vs_ai' then
-            player_2.name = 'AI'
+            player_2.name = 'A.I.'
             player_2.isAi = true
         end
+    elseif game.state == 'pause' then
+        button_restart:gameStateUpdate(game)
     elseif game.state == 'play' then
     --//___________________ Check if the ball is coliding _________________\\
         if ball:collides(paddle_1) then
@@ -298,7 +326,7 @@ function love.update(dt)
                 end
             end
 
-            paddle_2:aiupdate(dt, ball)
+            paddle_2:aiupdate(dt, ball, game.dificulty)
         end
 
         --\\________________________________________________________________//--
@@ -366,7 +394,7 @@ function love.draw()
     -- If in serve state, display the serving_player and "press enter to serve"
     elseif game.state == 'serve' then
         message_1:show(serving_player.name .. "'s turn")
-        if serving_player.name ~= 'AI' then
+        if not serving_player.isAi then
             message_2:show('Press Enter to serve')
         else
             message_2:show("Get Ready!")
@@ -374,7 +402,7 @@ function love.draw()
 
     -- If in victory state, display a message with the winner
     elseif game.state == 'victory' and winner ~= 'none' then
-        message_1:show(winner .. ' is the winner')
+        subtitle:show(winner .. ' wins!')
         message_2:show('Press Enter to play again')
 
     elseif game.state == 'pause' then
@@ -382,6 +410,7 @@ function love.draw()
         message_1:show('Game Paused')
         message_2:show('Press Space to resume')
         button_menu:draw('MENU')
+        button_restart:draw('RESTART')
 
     elseif game.state == 'play' then
         message_2:show('Press Space to Pause')
@@ -391,11 +420,13 @@ function love.draw()
         message_2:show('Select a Game Mode:')
 
     elseif game.state == 'credits' then
-        credits_message:show("A Davi Nakamura Production for\nHarvard CS50x\n\nImported Libraries by\n\nUlydev\ntenry92\n\nSound Effects from\nRFX\n\n")
+        credits_message:show("A DAVI NAKAMURA PRODUCTION FOR\nHarvard CS50x\n\nIMPORTED LIBRARIES\nPush, by Ulysse 'Ulydev' on GitHub\nClass, by Tenry 'tenry92' on GitHub\n\nSOUND EFFECTS FROM\nRFXGen\n\nFONTS\n8 Bit Wonder, by Joiro Hatgaya on Dafont\nI Pixel U, by Rodrigo S. T. on Dafont\nPixeled and Four, by 04 on Dafont\n\nTEACHERS\nDavid J. Malan\nColton Ogden\nDoug Lloyd\nBrian Yu\n")
     elseif game.state == 'settings' then
         message_1:show('Settings')
         max_points_message:show('NUMBER OF POINTS')
+        dificulty_message:show('A.I. DIFICULTY')
         buttons_points:renderAll()
+        buttons_dificulty:renderAll()
     end
     --\\________________________________________________________________//--
 
@@ -429,15 +460,13 @@ function love.keypressed(key)
             game.state = 'play'
         end
     elseif key == 'space' then
-        if game.state == 'play' then
-            previous_state = 'play'
-            game.state = 'pause'
-        elseif game.state == 'pause' then
+        if game.state == 'pause' then
+            sounds['play']:play()
             game.state = previous_state
-        elseif game.state == 'serve' then
-            previous_state = 'serve'
+        elseif game.state == 'play' or game.state == 'start' or game.state == 'serve' then
+            sounds['pause']:play()
+            previous_state = game.state
             game.state = 'pause'
-
         end
 
     end

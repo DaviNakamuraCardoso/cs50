@@ -9,7 +9,9 @@ function Button:construct(map, x, y, width, height, color)
     Button.super.construct(self, map, x, y, width, height, color)
     self.map = map
     self.noHoverColor = color
-    self.hoverColor = {self.color[1] / 2, self.color[2] / 2, self.color[3] / 2, self.color[4]}
+    self.hoverColor = {
+        self.color[1] / 2, self.color[2] / 2, self.color[3] / 2, self.color[4]
+    }
     self.clicked = false
 
 

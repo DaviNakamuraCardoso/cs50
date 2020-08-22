@@ -15,7 +15,7 @@ function Player:init(map)
     self.y = 0
     self.width = 16
     self.height = 20
-    self.lifes = 3
+    self.lives = 3
     self.generateNewLevel = false
 
     -- offset from top left to center to support sprite flipping
@@ -103,6 +103,12 @@ function Player:init(map)
                 love.graphics.newQuad(48, 0, 16, 20, self.texture:getDimensions())
             },
             interval = 0.05
+        }),
+        ['dying'] = Animation({
+            texture = self.texture,
+            frames = {
+                love.graphics.newQuad(64, 0, 16, 20, self.texture:getDimensions())
+            }
         })
     }
 
@@ -135,6 +141,7 @@ function Player:init(map)
             else
                 self.dx = 0
             end
+            self.map:enemyKilling()
         end,
         ['walking'] = function(dt)
 
@@ -164,6 +171,7 @@ function Player:init(map)
                 self:checkRightCollision()
                 self:checkLeftCollision()
             end
+            self.map:enemyKilling()
 
             -- check if there's a tile directly beneath us
             if not self.map:collides(self.map:tileAt(self.x, self.y + self.height)) and
@@ -208,6 +216,7 @@ function Player:init(map)
                 self:checkRightCollision()
                 self:checkLeftCollision()
             end
+            self.map:enemyKilling()
         end,
 
         ['winning'] = function(dt)
@@ -229,6 +238,20 @@ function Player:init(map)
                     self.sounds['triumph']:play()
 
                 end
+            end
+        end,
+        ['dying'] = function(dt)
+            if self.y + self.height < self.map.mapHeightPixels then
+                self.dy = self.map.gravity * 4
+                if self.dx > 0 then
+                    self.dx = self.dx * 0.5
+                end
+            else
+                self.lives = self.lives - 1
+                self.y = self.map.mapHeightPixels / 2 - self.height - 10
+                self.state = 'jumping'
+                self.dy = 0
+                self.animation = self.animations['jumping']
             end
         end
     }
@@ -346,7 +369,7 @@ function Player:render()
     love.graphics.draw(self.texture, self.currentFrame, math.floor(self.x + self.xOffset),
         math.floor(self.y + self.yOffset), 0, scaleX, 1, self.xOffset, self.yOffset)
 
-    for i=1, self.lifes do
+    for i=1, self.lives do
         love.graphics.draw(self.hearts, love.graphics.newQuad(0, 0, 16, 16, self.hearts), self.map.camX + i * 20, self.map.camY + 10)
     end
 

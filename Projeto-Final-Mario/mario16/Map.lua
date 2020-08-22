@@ -34,6 +34,7 @@ FLAG_BOTTOM = 16
 FLAG_ONE = 13
 FLAG_TWO = 14
 FLAG_THREE = 15
+
 -- a speed to multiply delta time to scroll map; smooth value
 local SCROLL_SPEED = 62
 
@@ -62,9 +63,15 @@ function Map:init(level)
     self.camX = 0
     self.camY = -3
 
+    self.sounds = {
+        ['kill'] = love.audio.newSource('sounds/kill.wav', 'static')
+    }
+
     -- cache width and height of map in pixels
     self.mapWidthPixels = self.mapWidth * self.tileWidth
     self.mapHeightPixels = self.mapHeight * self.tileHeight
+
+    self.enemy = Enemy(self, 'graphics/blue_alien.png', self.mapWidthPixels / 2)
 
     -- first, fill map with empty tiles
     for y = 1, self.mapHeight do
@@ -199,6 +206,7 @@ end
 function Map:update(dt)
     self.player:update(dt)
     self.flag:update(dt)
+    self.enemy:update(dt)
     -- keep camera's X coordinate following the player, preventing camera from
     -- scrolling past 0 to the left and the map's width
     self.camX = math.max(0, math.min(self.player.x - VIRTUAL_WIDTH / 2,
@@ -236,6 +244,7 @@ function Map:render()
         end
     end
     self.player:render()
+    self.enemy:render()
 
 end
 
@@ -245,4 +254,13 @@ function Map:getCamCoordinates()
         x = self.camX,
         y = self.camY
     }
+end
+
+
+function Map:enemyKilling()
+    if self.player.x + self.player.width >= self.enemy.x and self.enemy.x + self.enemy.width > self.player.x + self.player.width and self.player.y + self.player.height > self.enemy.y then
+        self.player.state = 'dying'
+        self.sounds['kill']:play()
+        self.player.animation = self.player.animations['dying']
+    end
 end

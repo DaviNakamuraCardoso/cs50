@@ -94,6 +94,7 @@ function Map:init(level)
 
                 self:setTile(x, cloudStart, CLOUD_LEFT)
                 self:setTile(x + 1, cloudStart, CLOUD_RIGHT)
+                x = x + 1
             end
         end
 
@@ -108,6 +109,10 @@ function Map:init(level)
                 self:setTile(x, y, TILE_BRICK)
             end
 
+            for y=self.mapHeight/2, self.mapHeight do
+                self:setTile(x, y, TILE_BRICK)
+            end
+
             -- next vertical scan line
             x = x + 1
 
@@ -118,6 +123,9 @@ function Map:init(level)
             -- place bush component and then column of bricks
             self:setTile(x, bushLevel, BUSH_LEFT)
             for y = self.mapHeight / 2, self.mapHeight do
+                self:setTile(x, y, TILE_BRICK)
+            end 
+            for y=self.mapHeight/2, self.mapHeight do
                 self:setTile(x, y, TILE_BRICK)
             end
             x = x + 1
@@ -135,7 +143,7 @@ function Map:init(level)
             if math.random(10) == 1 then
                 for y = self.mapHeight / 2, self.mapHeight do
                     self:setTile(x, y, TILE_EMPTY)
-                    self:setTile(x-1, y, TILE_EMPTY)
+                    self:setTile(x+1, y, TILE_EMPTY)
                 end
 
             end
@@ -229,4 +237,12 @@ function Map:render()
     end
     self.player:render()
 
+end
+
+
+function Map:getCamCoordinates()
+    return {
+        x = self.camX,
+        y = self.camY
+    }
 end

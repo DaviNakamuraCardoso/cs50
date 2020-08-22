@@ -13,6 +13,7 @@ require 'Animation'
 require 'Map'
 require 'Player'
 require 'Block'
+require 'Message'
 require 'Button'
 -- close resolution to NES but 16:9
 VIRTUAL_WIDTH = 432
@@ -26,7 +27,10 @@ WINDOW_HEIGHT = 720
 math.randomseed(os.time())
 
 -- Colors
-local colors = {
+colors = {
+    ['white'] = {
+        1, 1, 1, 1
+    },
     ['black'] = {
         0, 0, 0, 0.5
     },
@@ -38,9 +42,12 @@ local colors = {
     },
     ['blue'] = {
         0, 0, 1, 1
+    },
+    ['yellow'] = {
+        1, 1, 0, 1
     }
 }
-
+pixeled = 'fonts/font.ttf'
 
 
 -- makes upscaling look pixel-y instead of blurry
@@ -52,11 +59,14 @@ map = Map(1)
 -- performs initialization of all objects and data needed by program
 function love.load()
 
-    cover = Block(map, 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT, colors['black'])
-    nextLevelButton = Button(map, VIRTUAL_WIDTH / 2, VIRTUAL_HEIGHT / 3, 100, 20, colors['yellow'])
+
     -- sets up a different, better-looking retro font as our default
     love.graphics.setFont(love.graphics.newFont('fonts/font.ttf', 8))
 
+    cover = Block(0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT, colors['black'])
+    nextLevelButton = Button(map, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3, 100, 20, colors['yellow'])
+
+    msg = Message(0, 0, 'fonts/font.ttf', 10, colors['white'])
     -- sets up virtual screen resolution for an authentic retro feel
     push:setupScreen(VIRTUAL_WIDTH, VIRTUAL_HEIGHT, WINDOW_WIDTH, WINDOW_HEIGHT, {
         fullscreen = false,
@@ -109,10 +119,12 @@ end
 -- called every frame, with dt passed in as delta in time since last frame
 function love.update(dt)
     map:update(dt)
-    nextLevelButton:update(dt)
-    if map.newLevel and love.keyboard.wasPressed('r') then
-        local currentLevel = map.level
-        map = Map(currentLevel + 1)
+    if map.newLevel then
+        nextLevelButton:update()
+        if nextLevelButton.clicked then
+            local currentLevel = map.level
+            map = Map(currentLevel + 1)
+        end
     end
     -- reset all keys pressed and released this frame
     love.keyboard.keysPressed = {}
@@ -130,13 +142,11 @@ function love.draw()
     -- renders our map object onto the screen
     love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
     map:render()
-
     if map.newLevel then
-        cover:render()
-        nextLevelButton:render()
+        cover:render('LEVEL ' .. tostring(map.level) .. ' COMPLETE!', map.camX, map.camY)
+        nextLevelButton:render('Next Level', map.camX, map.camY)
     end
-
-
+    msg:show('Hello Mario!')
     -- end virtual resolution
     push:apply('end')
 end

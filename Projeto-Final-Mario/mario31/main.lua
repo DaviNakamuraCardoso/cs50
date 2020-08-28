@@ -156,10 +156,7 @@ function love.update(dt)
         initialScreen:show(dt)
         cover:getCamCoordinates()
     elseif gameState == 'gameOver' then
-        if buttonPlay.clicked then
-            map = Map(currentLevel)
-            gameState = 'play'
-        end
+        map:update(dt)
 
 
 
@@ -195,8 +192,7 @@ function love.draw()
         levelsButtons:renderAll()
 
     elseif gameState == 'gameOver' then
-        buttonPlay:render('TRY AGAIN')
-        cover:render('GAME OVER')
+        love.graphics.translate(math.floor(-map.camX + 0.5), math.floor(-map.camY + 0.5))
         map:render()
     end
 

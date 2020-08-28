@@ -193,7 +193,7 @@ function Map:init(level)
 
 
     -- start the background music
-    love.audio.setVolume(0.15)
+    love.audio.setVolume(0)
 
 end
 

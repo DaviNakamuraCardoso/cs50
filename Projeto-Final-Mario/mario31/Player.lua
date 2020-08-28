@@ -40,7 +40,8 @@ function Player:init(map)
         ['reviving'] = love.audio.newSource('sounds/twinkle.wav', 'static'),
         ['triumph'] = love.audio.newSource('sounds/triumph.wav', 'static'),
         ['score'] = love.audio.newSource('sounds/score.wav', 'static'),
-        ['box'] = love.audio.newSource('sounds/box.wav', 'static')
+        ['box'] = love.audio.newSource('sounds/box.wav', 'static'),
+        ['gameOver'] = love.audio.newSource('sounds/gameOver.wav', 'static')
     }
 
     -- animation frames
@@ -69,8 +70,11 @@ function Player:init(map)
 
 
     self.cover = Block(map, 0, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT, colors['black'])
+    self.cover.message.size = 28
+    self.cover.message.y = 30
     self.nextLevelButton = Button(map, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3, 100, 20, colors['yellow'])
-    self.menuButton = Button(map, VIRTUAL_WIDTH / 3 - 40, 30, 80, 20, colors['blue'])
+    self.menuButton = Button(map, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3 + 30, 100, 20, colors['yellow'])
+    self.buttonTryAgain = Button(map, VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3, 100, 20, colors['yellow'])
 
     -- Messages
     self.messageRevive = Message(0, VIRTUAL_HEIGHT / 3, 'fonts/four.ttf', 14, colors['white'])
@@ -310,18 +314,32 @@ function Player:update(dt)
 
     -- Buttons
     if self.map.newLevel then
+        if self.menuButton.clicked then
+            gameState = 'mainMenu'
+        end
         levelsButtons.buttonsUnlocked[self.map.level + 1] = true
         self.nextLevelButton:update()
+        self.buttonTryAgain:update()
         self.menuButton:update()
         if self.menuButton.clicked then
             gameState = 'mainMenu'
         end
-    elseif self.lives <= 0 then
+    elseif self.lives <= 0 and gameState == 'play' then
         gameState = 'gameOver'
+        self.sounds['gameOver']:play()
+        self.state = 'waiting'
+    elseif gameState == 'gameOver' then
+        self.buttonTryAgain:update()
+        self.menuButton:update()
         if self.menuButton.clicked then
             gameState = 'mainMenu'
+        elseif self.buttonTryAgain.clicked then
+            map = Map(self.map.level)
+            gameState = 'play'
         end
     end
+
+
 end
 
 -- jumping and block hitting logic
@@ -447,7 +465,7 @@ function Player:render()
 
         self.cover:render('LEVEL ' .. tostring(self.map.level) .. ' COMPLETE!')
         self.nextLevelButton:render('NEXT LEVEL')
-        self.menuButton:render('BACK TO MENU')
+        self.menuButton:render('MENU')
 
         if self.nextLevelButton.clicked then
             self.generateNewLevel = true
@@ -456,5 +474,10 @@ function Player:render()
         -- Messages
         self.messageScore:prettyShow(self.score, self.sounds['score'],'SCORE:', 3)
         self.messageBoxes:prettyShow(self.coins, self.sounds['box'],'BOXES COLLECTED: ', 1)
+
+    elseif gameState == 'gameOver' then
+        self.cover:render('GAME OVER')
+        self.buttonTryAgain:render('TRY AGAIN')
+        self.menuButton:render('MENU')
     end
 end

@@ -142,8 +142,10 @@ function love.update(dt)
     if gameState == 'play' then
         map:update(dt)
         if map.newLevel and map.player.generateNewLevel then
-            currentLevel = map.level
-            map = Map(currentLevel + 1)
+            if map.level ~= 10 then
+                currentLevel = map.level
+                map = Map(currentLevel + 1)
+            end
         end
     elseif gameState == 'mainMenu' then
         initialScreen:show(dt)

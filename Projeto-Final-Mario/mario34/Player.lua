@@ -83,6 +83,7 @@ function Player:init(map)
     self.messageBoxes = Message(0, VIRTUAL_HEIGHT / 2 + 50, 'fonts/four.ttf', 14,
     colors['white'])
     self.messageEnemies = Message(0, VIRTUAL_HEIGHT / 2 + 30, 'fonts/four.ttf', 14, colors['white'])
+    self.messageCredits = Message(0, VIRTUAL_HEIGHT, 'fonts/pixelu.ttf', 8, colors['white'])
 
     -- initialize all player animations
     self.animations = {
@@ -465,19 +466,25 @@ function Player:render()
     -- Buttons and cover
 
     if self.map.newLevel then
+        if self.map.level ~= 10 then
+            self.cover:render('LEVEL ' .. tostring(self.map.level) .. ' COMPLETE!')
+            self.nextLevelButton:render('NEXT LEVEL')
+            self.menuButton:render('MENU')
 
-        self.cover:render('LEVEL ' .. tostring(self.map.level) .. ' COMPLETE!')
-        self.nextLevelButton:render('NEXT LEVEL')
-        self.menuButton:render('MENU')
+            if self.nextLevelButton.clicked then
+                self.generateNewLevel = true
+            end
 
-        if self.nextLevelButton.clicked then
-            self.generateNewLevel = true
-        end
+            -- Messages
+            self.messageScore:prettyShow(self.score, self.sounds['score'],'SCORE:', 3)
+            self.messageBoxes:prettyShow(self.coins, self.sounds['box'],'BOXES COLLECTED:   ', 1)
+            self.messageEnemies:prettyShow(self.enemiesKilled, self.sounds['box'], 'ENEMIES     KILLED: ', 1)
+        else
+            self.cover:render(' ')
+            self.messageScore:twinkle('GAME FINISHED!', 0.3)
+            self.messageCredits:float('Super Mario 50 by Davi Nakamura\nfor Harvard CS50x\n\nImported Libraries:\nPush, by Ulisse "ulydev" on Github\nClass, by Mathias Richter on Github\nsuperclass, by Tenry "tenry92" on Github\n\nFONTS\nFour, by 04 on Dafont\nI Pixel U, by Rodrigo S. T.\n8 Bit Wonder, by Joiro Hatagaya on Dafont\n\n')
+        end 
 
-        -- Messages
-        self.messageScore:prettyShow(self.score, self.sounds['score'],'SCORE:', 3)
-        self.messageBoxes:prettyShow(self.coins, self.sounds['box'],'BOXES COLLECTED: ', 1)
-        self.messageEnemies:prettyShow(self.enemiesKilled, self.sounds['box'], 'ENEMIES KILLED: ', 1)
 
     elseif gameState == 'gameOver' then
         self.cover:render('GAME OVER')

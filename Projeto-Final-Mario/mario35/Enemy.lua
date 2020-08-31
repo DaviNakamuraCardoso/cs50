@@ -21,6 +21,8 @@ function Enemy:init(map, spritesheet, width, height, x, y)
     self.dy = 0
     self.speed = ENEMY_SPEED * (1 + (self.map.level / 20))
 
+    self.lives = 1
+
     self.direction = 1
 
     self.xOffset = 8
@@ -30,22 +32,32 @@ function Enemy:init(map, spritesheet, width, height, x, y)
     self.interval = 2
     self.timer = 0
     self.isFinal = false
-    self.finalTexture = love.graphics.newImage('graphics/finalDeath.png')
+
+    self.sounds = {
+        ['triumph'] = love.audio.newSource('sounds/triumph.wav', 'static'),
+        ['finalDeath'] = love.audio.newSource('sounds/finalDeath.wav', 'static')
+    }
 
     self.finalBossFrames = {}
-    self.finalDeathFrames = {
-        love.graphics.newQuad(0, 0, 200, 200, self.finalTexture:getDimensions()),
-        love.graphics.newQuad(200, 0, 200, 200, self.finalTexture:getDimensions()),
-        love.graphics.newQuad(400, 0, 200, 200, self.finalTexture:getDimensions()),
-        love.graphics.newQuad(600, 0, 200, 200, self.finalTexture:getDimensions()),
-        love.graphics.newQuad(800, 0, 200, 200, self.finalTexture:getDimensions()),
-        love.graphics.newQuad(0, 200, 200, 200, self.finalTexture:getDimensions()),
-    }
-    for i=0, 1400, 200 do
-        for j=0, 1000, 200 do
-            self.finalBossFrames[(j*i + j) / 200] = love.graphics.newQuad(j, i, 200, 200, self.texture:getDimensions())
+    local index = 0
+    for i=0, 1200, 200 do
+        for j=0, 800, 200 do
+            self.finalBossFrames[index] = love.graphics.newQuad(j, i, 200, 200, self.texture:getDimensions())
+            index = index + 1
         end
     end
+
+    self.finalDeathFrames = {}
+    self.finalTexture = love.graphics.newImage('graphics/finalDeath.png')
+    index = 0
+    for i=0, 600, 200 do
+        for j=0, 800, 200 do
+            self.finalDeathFrames[index] = love.graphics.newQuad(j, i, 200, 200, self.finalTexture:getDimensions())
+            index = index + 1
+        end
+    end
+
+    self.finalHeartsSheet = love.graphics.newImage('graphics/finalHeart.png')
 
 
 
@@ -88,6 +100,15 @@ function Enemy:init(map, spritesheet, width, height, x, y)
                 self.dy = math.ceil(self.map.gravity * 4 * dt)
                 self.y = math.ceil(self.y + self.dy)
             else
+                if self.animation.currentFrame >= 12 then
+                    self.sounds['triumph']:play()
+                    self.animation = self.animations['dead']
+                    self.state = 'stopped'
+                    self.map.newLevel = true
+                    self.map.player.state = 'waiting'
+                    self.map.player.dx = 0
+                    self.map.player.dy = 0
+                end
                 self.dy = 0
                 self.dx = 0
             end
@@ -115,15 +136,14 @@ function Enemy:init(map, spritesheet, width, height, x, y)
             self.dy = 0
         end,
         ['finalBoss'] = function(dt)
-            self.dy = 0
-            self.dx = 0
             if self.timer >= self.interval and self.map.player.x > self.x - 30 then
                 self.timer = 0
                 self.map.numberOfEnemies = self.map.numberOfEnemies + 1
-                self.map.enemies[self.map.numberOfEnemies] = Enemy(self.map, 'graphics/redAlien.png', 16, 20, self.x + self.width / 2, self.y)
+                self.map.enemies[self.map.numberOfEnemies] = Enemy(self.map, 'graphics/redAlien.png', 16, 20, self.x + self.width - 10, self.y + 20)
             else
                 self.timer = self.timer + dt
             end
+
 
 
         end
@@ -180,6 +200,12 @@ function Enemy:init(map, spritesheet, width, height, x, y)
             texture = self.finalTexture,
             frames = self.finalDeathFrames,
             interval = 0.2
+        }),
+        ['dead'] = Animation({
+            texture = self.finalTexture,
+            frames = {
+                love.graphics.newQuad(20, 620, 160, 160, self.finalTexture:getDimensions())
+            }
         })
     }
 
@@ -192,8 +218,18 @@ end
 
 function Enemy:update(dt)
     self.behaviors[self.state](dt)
-    self.animations[self.state]:update(dt)
+    self.animation:update(dt)
     self.currentFrame = self.animation:getCurrentFrame()
+    if self.lives == 0 then
+        self.state = 'dying'
+        if self.isFinal then
+            self.animation = self.animations['finalDeath']
+            self.texture = love.graphics.newImage('graphics/finalDeath.png')
+
+        else
+            self.animation = self.animations['dying']
+        end
+    end
 end
 
 
@@ -201,6 +237,11 @@ end
 function Enemy:render()
     love.graphics.draw(self.texture, self.currentFrame, math.floor(self.x + self.xOffset), math.floor(self.y + self.yOffset), 0, self.direction, 1,
     self.xOffset, self.yOffset)
+    if self.isFinal then
+        for i=1, self.lives do
+            love.graphics.draw(self.finalHeartsSheet, love.graphics.newQuad(0, 0, 10, 10, self.finalHeartsSheet), self.x -30 + i * 15 + self.width/2, self.map.camY + 10)
+        end
+    end
 end
 
 

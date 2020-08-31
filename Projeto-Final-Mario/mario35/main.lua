@@ -141,11 +141,9 @@ function love.update(dt)
     updateMouse()
     if gameState == 'play' then
         map:update(dt)
-        if map.newLevel and map.player.generateNewLevel then
-            if map.level ~= 10 then
-                currentLevel = map.level
-                map = Map(currentLevel + 1)
-            end
+        if map.newLevel and map.player.generateNewLevel and map.level ~= 10 then
+            currentLevel = map.level
+            map = Map(currentLevel + 1)
         end
     elseif gameState == 'mainMenu' then
         initialScreen:show(dt)
@@ -178,7 +176,11 @@ function love.draw()
     push:apply('start')
 
     -- clear screen using Mario background blue
-    love.graphics.clear(108/255, 140/255, 255/255, 255/255)
+    if map.level ~= 10 then
+        love.graphics.clear(108/255, 140/255, 255/255, 255/255)
+    else
+        love.graphics.clear(0.7, 0.5, 0.5, 1)
+    end
 
     -- renders our map object onto the screen
     if gameState == 'play' then

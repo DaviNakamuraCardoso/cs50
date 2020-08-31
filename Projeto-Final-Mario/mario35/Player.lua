@@ -15,7 +15,7 @@ function Player:init(map)
     self.y = 0
     self.width = 16
     self.height = 20
-    self.lives = 10
+    self.lives = 3
     self.generateNewLevel = false
 
     -- offset from top left to center to support sprite flipping
@@ -65,7 +65,7 @@ function Player:init(map)
     -- position on top of map tiles
     self.y = map.tileHeight * ((map.mapHeight - 2) / 2) - self.height
     self.groundPosition = self.y
-    self.x = map.tileWidth * 10
+    self.x = 5 * self.map.tileWidth
 
     self.hearts = love.graphics.newImage('graphics/heart.png')
 
@@ -83,7 +83,7 @@ function Player:init(map)
     self.messageBoxes = Message(0, VIRTUAL_HEIGHT / 2 + 50, 'fonts/four.ttf', 14,
     colors['white'])
     self.messageEnemies = Message(0, VIRTUAL_HEIGHT / 2 + 30, 'fonts/four.ttf', 14, colors['white'])
-    self.messageCredits = Message(0, VIRTUAL_HEIGHT, 'fonts/pixelu.ttf', 8, colors['white'])
+    self.messageCredits = Message(0, VIRTUAL_HEIGHT / 2, 'fonts/pixelu.ttf', 8, colors['white'])
 
     -- initialize all player animations
     self.animations = {
@@ -196,6 +196,9 @@ function Player:init(map)
 
             if self.map.level ~= 10 then
                 self:checkFlagCollision()
+
+            else
+                self.map:checkFinalCollision()
             end
             if self.state ~= 'winning' then
                 self:checkRightCollision()
@@ -244,6 +247,9 @@ function Player:init(map)
             -- check for collisions moving left and right
             if self.map.level ~= 10 then
                 self:checkFlagCollision()
+
+            else
+                self.map:checkFinalCollision()
             end
             if self.state ~= 'winning' then
                 self:checkRightCollision()
@@ -322,16 +328,16 @@ function Player:update(dt)
 
     -- Buttons
     if self.map.newLevel then
-        if self.menuButton.clicked then
-            gameState = 'mainMenu'
-        end
-        levelsButtons.buttonsUnlocked[self.map.level + 1] = true
-        self.nextLevelButton:update()
-        self.buttonTryAgain:update()
         self.menuButton:update()
         if self.menuButton.clicked then
             gameState = 'mainMenu'
         end
+        if self.map.level ~= 10 then
+            self.nextLevelButton:update()
+            levelsButtons.buttonsUnlocked[self.map.level + 1] = true
+        end
+        self.buttonTryAgain:update()
+
     elseif self.lives <= 0 and gameState == 'play' then
         gameState = 'gameOver'
         self.sounds['gameOver']:play()
@@ -347,6 +353,7 @@ function Player:update(dt)
             gameState = 'play'
         end
     end
+
 
 
 end
@@ -471,24 +478,22 @@ function Player:render()
     -- Buttons and cover
 
     if self.map.newLevel then
+
         if self.map.level ~= 10 then
             self.cover:render('LEVEL ' .. tostring(self.map.level) .. ' COMPLETE!')
             self.nextLevelButton:render('NEXT LEVEL')
-            self.menuButton:render('MENU')
-
             if self.nextLevelButton.clicked then
                 self.generateNewLevel = true
             end
 
-            -- Messages
-            self.messageScore:prettyShow(self.score, self.sounds['score'],'SCORE:', 3)
-            self.messageBoxes:prettyShow(self.coins, self.sounds['box'],'BOXES COLLECTED:   ', 1)
-            self.messageEnemies:prettyShow(self.enemiesKilled, self.sounds['box'], 'ENEMIES     KILLED: ', 1)
         else
-            self.cover:render(' ')
-            self.messageScore:twinkle('GAME FINISHED!', 0.3)
-            self.messageCredits:float('Super Mario 50 by Davi Nakamura\nfor Harvard CS50x\n\nImported Libraries:\nPush, by Ulisse "ulydev" on Github\nClass, by Mathias Richter on Github\nsuperclass, by Tenry "tenry92" on Github\n\nFONTS\nFour, by 04 on Dafont\nI Pixel U, by Rodrigo S. T.\n8 Bit Wonder, by Joiro Hatagaya on Dafont\n\n')
+            self.cover:render('FINAL LEVEL COMPLETE!')
         end
+        self.menuButton:render('MENU')
+
+        -- Messages
+        self.messageScore:prettyShow(self.score, self.sounds['score'],'SCORE:', 4)
+        self.messageBoxes:prettyShow(self.coins, self.sounds['box'],'BOXES COLLECTED:   ', 1)
 
 
     elseif gameState == 'gameOver' then

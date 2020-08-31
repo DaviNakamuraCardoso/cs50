@@ -12,6 +12,7 @@ function Button:construct(map, x, y, width, height, color)
     self.hoverColor = {
         self.color[1] / 2, self.color[2] / 2, self.color[3] / 2, self.color[4]
     }
+    self.sound = love.audio.newSource('sounds/button.wav', 'static')
     self.clicked = false
 
 
@@ -35,6 +36,7 @@ function Button:update()
     self:getCamCoordinates()
     if self:hover() and mouse['clicked'] then
         self.clicked = true
+        self.sound:play()
     else
         self.clicked = false
     end

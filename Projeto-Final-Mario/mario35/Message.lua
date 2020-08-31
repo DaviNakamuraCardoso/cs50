@@ -52,11 +52,9 @@ function Message:twinkle(message, interval, sound)
     self:show(message)
 end
 
-
-function Message:float(text, velocity)
-    self.y = math.floor(self.y - velocity * dt)
-    self:show(text)
-end 
+function Message:float(dt)
+    self.y = self.y - 10 * dt
+end
 
 
 function Message:update(dt)

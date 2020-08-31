@@ -50,8 +50,11 @@ function Map:init(level)
 
     self.tileWidth = 16
     self.tileHeight = 16
-    self.mapWidth = 200
+    self.mapWidth = 50  + self.level * 50
     self.mapHeight = 28
+    -- cache width and height of map in pixels
+    self.mapWidthPixels = self.mapWidth * self.tileWidth
+    self.mapHeightPixels = self.mapHeight * self.tileHeight
     self.tiles = {}
 
     -- applies positive Y influence on anything affected
@@ -66,12 +69,21 @@ function Map:init(level)
 
     self.sounds = {
         ['kill'] = love.audio.newSource('sounds/kill.wav', 'static'),
-        ['kill2'] = love.audio.newSource('sounds/kill2.wav', 'static')
+        ['kill2'] = love.audio.newSource('sounds/kill2.wav', 'static'),
+        ['kill3'] = love.audio.newSource('sounds/kill3.flac', 'static'),
+        ['finalDeath'] = love.audio.newSource('sounds/finalDeath.wav', 'static'),
+        ['finalScaryEffect'] = love.audio.newSource('sounds/alienTransmission.mp3', 'static'),
+        ['finalScaryEffect2'] = love.audio.newSource('sounds/alienSpaceship.wav', 'static')
     }
 
-    -- cache width and height of map in pixels
-    self.mapWidthPixels = self.mapWidth * self.tileWidth
-    self.mapHeightPixels = self.mapHeight * self.tileHeight
+    if self.level == 10 then
+        self.sounds['finalScaryEffect']:play()
+        self.sounds['finalScaryEffect2']:play()
+        self.sounds['finalScaryEffect']:setLooping(true)
+        self.sounds['finalScaryEffect2']:setLooping(true)
+        love.graphics.clear(0.5, 0.5, 0.5, 1)
+    end
+
 
 
     self.buttonPause = Button(self, VIRTUAL_WIDTH - 60, 10, 21, 20, colors['yellow'])
@@ -205,15 +217,17 @@ function Map:init(level)
         self.flag = Flag(self.mapWidth - 7, self.mapHeight / 2, 7, self)
 
     else
-        self.enemies[1] = Enemy(self, 'graphics/finalBoss.png', 200, 200, self.mapWidthPixels - 600, -50)
+        self.enemies[1] = Enemy(self, 'graphics/finalBoss.png', 100, 100, self.mapWidthPixels - 590, 10)
         self.enemies[1].animation = self.enemies[1].animations['finalBoss']
         self.enemies[1].state = 'finalBoss'
         self.enemies[1].isFinal = true
-        self:generatePiramid(self.enemies[1].x / self.tileWidth, self.mapHeightPixels / 2, 9, 'less')
+        self.enemies[1].lives = 5
+        self:generatePiramid(self.mapWidth
+         - 40, self.mapHeight / 2, 8, 'more')
     end
 
     -- start the background music
-    love.audio.setVolume(0)
+    love.audio.setVolume(0.15)
 
 end
 
@@ -373,8 +387,8 @@ end
 
 function Map:enemyKilling()
     for i=1, self.numberOfEnemies do
-        if self.player.x + self.player.width >= self.enemies[i].x and self.enemies[i].x + self.enemies[i].width > self.player.x and self.player.y + self.player.height > self.enemies[i].y and self.player.y < self.enemies[i].y + self.enemies[i].height and self.enemies[i].isAlive then
-            if self.player.y + self.player.height > self.enemies[i].y + self.enemies[i].height / 2 and not self.enemies[i].isFinal then
+        if self.player.x + self.player.width >= self.enemies[i].x and self.enemies[i].x + self.enemies[i].width > self.player.x and self.player.y + self.player.height > self.enemies[i].y and self.player.y < self.enemies[i].y + self.enemies[i].height and self.enemies[i].isAlive and not self.enemies[i].isFinal then
+            if self.player.y + self.player.height > self.enemies[i].y + self.enemies[i].height / 2 then
                 -- Plays the sound
                 self.sounds['kill']:play()
 
@@ -384,23 +398,42 @@ function Map:enemyKilling()
                 self.player.animation = self.player.animations['dying']
 
                 -- Enemy in fly state
-
-                self.enemies[i].y = self.enemies[i].y - 5
-                self.enemies[i].direction = -1
-                self.enemies[i].state = 'fly'
-                self.enemies[i].animation = self.enemies[i].animations['fly']
-            else
-                self.enemies[i].state = 'dying'
                 if not self.enemies[i].isFinal then
-                    self.sounds['kill2']:play()
-                    self.enemies[i].animation = self.enemies[i].animations['dying']
-                else
-                    self.enemies[i].animation = self.enemies[i].animations['finalDeath']
+                    self.enemies[i].y = self.enemies[i].y - 5
+                    self.enemies[i].direction = -1
+                    self.enemies[i].state = 'fly'
+                    self.enemies[i].animation = self.enemies[i].animations['fly']
                 end
+            else
+
+                self.enemies[i].lives = self.enemies[i].lives - 1
+                self.sounds['kill2']:play()
+
 
                 self.player.state = 'killing'
                 self.player.animation = self.player.animations['killing']
                 self.player.enemiesKilled = self.player.enemiesKilled + 1
+            end
+        end
+    end
+end
+
+
+function Map:checkFinalCollision()
+    if self.player.x < self.enemies[1].x + 3 * self.enemies[1].width / 4 and
+    self.player.x + self.player.width > self.enemies[1].x + self.enemies[1].width / 4 then
+        if self.player.y + self.player.height > self.enemies[1].y and self.player.y < self.enemies[1].y then
+            self.player.dy = -400
+            self.player.y = self.enemies[1].y - self.player.height - 2
+            self.player.state = 'jumping'
+            self.player.animation = self.player.animations['jumping']
+            self.player.dx = 200
+
+            -- The consequences for the enemy
+            self.enemies[1].lives = self.enemies[1].lives - 1
+            self.sounds['kill3']:play()
+            if self.enemies[1].lives == 0 then
+                self.sounds['finalDeath']:play()
             end
         end
     end

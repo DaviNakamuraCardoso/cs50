@@ -2,6 +2,8 @@
 
  Curso de Harvard de Introdução à Ciência da Computação.
 
+<img src="./CS50x.png" style="zoom:30%;" />
+
 ## Semana 0: Introdução
 
 - Definição de ciência da computação

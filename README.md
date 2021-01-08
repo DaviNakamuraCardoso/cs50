@@ -3,6 +3,7 @@
  Curso de Harvard de Introdução à Ciência da Computação.
 
 <img src="./CS50x.png" style="zoom:30%;" />
+Link do certificado: https://certificates.cs50.io/e4ac5b9e-16dd-4d07-b903-cabc5c4da12b.pdf?size=letter
 
 ## Semana 0: Introdução
 

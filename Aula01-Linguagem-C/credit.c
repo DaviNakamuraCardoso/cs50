@@ -2,9 +2,9 @@
 #include <cs50.h>
 #include <stdio.h>
 
-uint len(long a); // (I)ndicfjando a presença de funções
-int sum(uint a);
-float sw(long a, int b());
+int len(long a); // (I)ndicfjando a presença de funções
+int sum(int a);
+float sw(long a, int b);
 int split(long a, char b);
 
 int main(void)

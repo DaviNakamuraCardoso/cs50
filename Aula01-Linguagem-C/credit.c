@@ -7,8 +7,8 @@ int sum(int a);
 float sw(long a, int b);
 int split(long a, char b);
 
-int main(void)
 
+int main(void)
 {
     long n = get_long("Number: ");
     int sum = split(n, 'm') + split(n, 'n');
@@ -55,6 +55,8 @@ int sum(int a) {
     }
     return p;
 }
+
+
 float sw(long a, int b) {
   int i;
   int l = len(a);
@@ -63,6 +65,8 @@ float sw(long a, int b) {
   }
   return a;
 }
+
+
 int split(long a, char b) { // Essa função obtém três argumentos, b e c,
 // que representam, respectivamente, o comprimento do número, o número em si e um comando, que
 // indica se o é desejado obter os números a serem multiplicados por dois (m) ou os números
@@ -85,5 +89,5 @@ int split(long a, char b) { // Essa função obtém três argumentos, b e c,
 
       }
   }
-return p;
+  return p;
 }

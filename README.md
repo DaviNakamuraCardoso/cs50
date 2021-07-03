@@ -1,6 +1,6 @@
 # CS50
 
-Harvard Course in Introduction to Computer Science.
+Introduction to the intellectual enterprises of computer science and the art of programming. This course teaches students how to think algorithmically and solve problems efficiently. Topics include abstraction, algorithms, data structures, encapsulation, resource management, security, software engineering, and web programming. Languages include C, Python, and SQL plus HTML, CSS, and JavaScript. Problem sets inspired by the arts, humanities, social sciences, and sciences. Course culminates in a final project.
 
 <img src="./CS50x.png" style="zoom:30%;" />
 Certificate link: https://certificates.cs50.io/e4ac5b9e-16dd-4d07-b903-cabc5c4da12b.pdf?size=letter
@@ -49,7 +49,7 @@ Certificate link: https://certificates.cs50.io/e4ac5b9e-16dd-4d07-b903-cabc5c4da
 - Recursion
 - Insertion sort and its characteristics *(&Theta;(n&sup2;))*
 - Merge sort and its characteristics *(&Theta;(n log n))*
-- Quick sort 
+- Quick sort
 - Definition of structures
 
 ## Week 4: Memory
